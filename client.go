@@ -6,7 +6,8 @@ import (
 	"io"
 	"net"
 )
-func Initialization() {
+
+func NewClient() {
 	tcpAddr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:8100")
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
 	if err != nil {
