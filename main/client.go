@@ -1,7 +1,9 @@
 package main
 
-import "github.com/305983806/gotunnel"
+import (
+	"github.com/305983806/gotunnel"
+)
 
 func main() {
-	gotunnel.Initialization()
+	gotunnel.NewClient()
 }
