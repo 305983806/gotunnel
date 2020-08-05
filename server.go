@@ -30,7 +30,7 @@ func startTCP8100() {
 		fmt.Println("服务端启动失败：" + err.Error())
 		panic(err)
 	}
-	fmt.Println("Server started on port: %s", port)
+	fmt.Printf("Server started on port: %s\n", port)
 	for {
 		tcpConn, err := tcpListener.AcceptTCP()
 		if err != nil {
