@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/305983806/gotunnel/util"
 	"io"
 	"net"
 )
@@ -19,8 +20,8 @@ func NewClient() {
 	reader := bufio.NewReader(conn)
 
 	// 向服务器登记tunnel
-	conf := Conf{}
-	err = getYaml("./server_config.json", &conf)
+	conf := util.Conf{}
+	err = util.getYaml("./server_config.json", &conf)
 	if err != nil {
 		fmt.Println(err)
 	}
