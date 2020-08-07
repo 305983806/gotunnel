@@ -1,0 +1,14 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": "8100",
+    "tunnel": "cp"
+  },
+  "http": [
+    {
+      "path": "hello",
+      "serviceHost": "127.0.0.1",
+      "servicePort": "8080"
+    }
+  ]
+}

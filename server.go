@@ -1,6 +1,7 @@
-package gotunnel
+package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"time"
@@ -10,7 +11,7 @@ func NewServer()  {
 	// 监听客户端链接8100端口
 	startTCP8100()
 	// 监听公网链接80端口
-	//startTCP80()
+	startTCP80()
 	// 如果接收到来自公网的请求，建立tunnel
 	// 销毁tunnel
 	// 通过tunnel转发tcp 2531.93
@@ -18,7 +19,7 @@ func NewServer()  {
 
 var (
 	cache *net.TCPConn
-	allConns map[string]*net.TCPConn
+	allConns = make(map[string]*net.TCPConn)
 )
 
 func startTCP8100() {
@@ -31,19 +32,43 @@ func startTCP8100() {
 		panic(err)
 	}
 	fmt.Printf("Server started on port: %s\n", port)
+
 	for {
 		tcpConn, err := tcpListener.AcceptTCP()
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("客户端：%s " + tcpConn.RemoteAddr().String() + "正在接入...")
+		fmt.Printf("客户端：%s 正在接入...\n", tcpConn.RemoteAddr().String())
+
+		// 接收tunnel注册信息
+		signinTunnel(tcpConn)
 
 		_remoteAddr := tcpConn.RemoteAddr().String()
 		if _, ok := allConns[_remoteAddr]; !ok {
 			allConns[_remoteAddr] = tcpConn
 		}
-		//go checkHeartbeat(tcpConn)
+		go checkHeartbeat(tcpConn)
 	}
+}
+
+// 登记tunnel
+func signinTunnel(conn *net.TCPConn) {
+	// 创建消息缓冲区
+	buffer := make([]byte, 1024)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		panic(err)
+	}
+	// 转化为字符串输出
+	msg := string(buffer[0:n])
+	fmt.Println("收到消息：", conn.RemoteAddr(), msg)
+
+	conf := Conf{}
+	err = json.Unmarshal([]byte(msg), &conf)
+	if err != nil {
+		panic(err)
+	}
+	// 向http注册一个目录
 }
 
 // 心跳检测
@@ -74,6 +99,9 @@ func startTCP80() {
 			continue
 		}
 		fmt.Println("收到来自 %s:%s 的外部请求 ", tcpConn.RemoteAddr().String(), port)
-
 	}
+}
+
+func main() {
+	NewServer()
 }

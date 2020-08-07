@@ -1,7 +1,8 @@
-package gotunnel
+package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -14,8 +15,26 @@ func NewClient() {
 		fmt.Println("Client connect error ! " + err.Error())
 		return
 	}
-	fmt.Println("成功接入中央服务器。")
+	fmt.Printf("已成功连接到服务器端[%s][local:%s]", conn.RemoteAddr().String(), conn.LocalAddr().String())
 	reader := bufio.NewReader(conn)
+
+	// 向服务器登记tunnel
+	conf := Conf{}
+	err = getYaml("./server_config.json", &conf)
+	if err != nil {
+		fmt.Println(err)
+	}
+	jsonStr, err := json.Marshal(conf)
+	if err != nil {
+		panic(err)
+	}
+	_, err = conn.Write([]byte(string(jsonStr) + "\n"))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("已经向中央服务器成功登记 Tunnel[%s]", conf.Server.Tunnel)
+
+	fmt.Printf("从服务端获得心跳包的发送时间间隔为：2秒")
 	for {
 		s, err := reader.ReadString('\n')
 		if err != nil || err == io.EOF {
@@ -83,4 +102,8 @@ func close(conn *net.TCPConn, name string) {
 	if err != nil {
 		fmt.Println(name + " close: " + err.Error())
 	}
+}
+
+func main() {
+	NewClient()
 }
