@@ -3,17 +3,22 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/305983806/gotunnel/util"
 	"io"
 	"net"
 	"strconv"
 	"strings"
 )
 
-var (
+const (
 	serverHost = "127.0.0.1"
 	serverPort = 8002
 	tunnPort = 8003
-	configStr = "{\"name\":\"cp\",\"rules\":[{\"tag\":\"neo\",\"host\":\"127.0.0.1\",\"port\":8080}]}"
+	filePath = "../config.yaml"
+)
+
+var (
+	config util.Config
 )
 
 func Start(ip string, port int) {
@@ -31,6 +36,7 @@ func Start(ip string, port int) {
 // 发送配置信息，注册tunnel
 func sendConfig(conn *net.TCPConn) {
 	//TODO 读取配置
+	config.GetConfig(filePath)
 	b := []byte("{\"name\":\"cp\",\"rules\":[{\"tag\":\"neo\",\"host\":\"127.0.0.1\",\"port\":8080}]}\n")
 	conn.Write(b)
 }
@@ -70,7 +76,7 @@ func combine(tag string) {
 }
 
 func connectRemote() *net.TCPConn {
-	addr, _ := net.ResolveTCPAddr("tcp", serverHost + ":" + strconv.Itoa(tunnelPort))
+	addr, _ := net.ResolveTCPAddr("tcp", serverHost + ":" + strconv.Itoa(tunnPort))
 	c, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {
 		fmt.Println("DialTCP error: ", err)
