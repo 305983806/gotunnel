@@ -1,0 +1,10 @@
+serverHost: "127.0.0.1"
+serverPort: "8002"
+tunnel: "cp"
+rules:
+  - tag: "neo"
+    host: "127.0.0.1"
+    port: 8080
+  - tag: "authentication"
+    host: "127.0.0.1"
+    port: 8081

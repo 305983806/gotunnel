@@ -1,4 +1,4 @@
-package main
+package gotunnel
 
 import (
 	"encoding/json"
