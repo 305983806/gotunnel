@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	ServerHost string	`json:"serverHost"`
-	ServerPort string	`json:"serverPort"`
+	Serverhost string	`json:"serverhost"`
+	Serverport int	`json:"serverport"`
 	Tunnel string	`json:"name"`
 	Rules []Rule	`json:"rules"`
 }
