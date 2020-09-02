@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/305983806/gotunnel/util"
 	"io"
 	"net"
 	"net/http"
@@ -18,16 +19,9 @@ import (
 )
 
 type Tunnel struct {
-	Name string	`json:"name"`
-	Rules []Rule	`json:"rules"`
+	util.Config
 	ControlConn *net.TCPConn
 	httpConn *net.TCPConn
-}
-
-type Rule struct {
-	Tag string	`json:"tag"`
-	Host string	`json:"host"`
-	Port int	`json:"port"`
 }
 
 var (
@@ -157,7 +151,7 @@ func controlPipe(conn *net.TCPConn) {
 			fmt.Println(err)
 		}
 		tunnel.ControlConn = conn
-		tunnels[tunnel.Name] = &tunnel
+		tunnels[tunnel.Config.Tunnel] = &tunnel
 		for _, v := range tunnel.Rules  {
 			httpmaps[v.Tag] = tunnel.Name
 		}
